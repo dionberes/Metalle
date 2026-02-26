@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MetalPreise</title>
+    <link rel="icon" type="image/png" href="assets/ico.png">
+    <link rel="shortcut icon" href="assets/ico.png">
+    <link rel="apple-touch-icon" href="assets/ico.png">
+    <link rel="stylesheet" href="static/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>MetalPreise</h1>
+            <p class="last-updated" id="lastUpdated">API loading</p>
+        </header>
+
+        <div class="price-grid">
+            <!-- Gold Card -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="symbol">Britannia</span>
+                    <h3>Gold 0.5oz</h3>
+                </div>
+                <div class="price-main loading" id="goldPrice">
+                    <span class="spinner"></span> Load..
+                </div>
+                <div class="stats">
+                    <div class="stat-item">
+                        <label>Letzter Preis</label>
+                        <span id="goldAlt">—</span>
+                    </div>
+                    <div class="stat-item">
+                        <label>Trend</label>
+                        <span class="trend flat" id="goldTrend">—</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Silver Card -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="symbol">Wiener Philharmonika</span>
+                    <h3>Silber 1oz</h3>
+                </div>
+                <div class="price-main loading" id="silverPrice">
+                    <span class="spinner"></span> …
+                </div>
+                <div class="stats">
+                    <div class="stat-item">
+                        <label>Letzter Preis</label>
+                        <span id="silverAlt">—</span>
+                    </div>
+                    <div class="stat-item">
+                        <label>Trend</label>
+                        <span class="trend flat" id="silverTrend">—</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    
+
+        <footer class="footer" style="height: 10px;">
+            <p style="font-size: 0.6rem;">© Dion Beres.</p>   <!-- Fürs Ego -->
+        </footer>
+    </div>
+    <script>
+        const API_KEY   = 'goldapi-dgj5smljlfodt-io';
+        const CACHE_KEY = 'metalpreise_cache';
+        const CACHE_TTL = 8 * 60 * 60 * 1000; // 8 stunden damit api nd abkackt
+
+        const fmt = n => n.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+
+        function trendInfo(change) {
+            if (change > 0.005)  return { label: `▲ ${fmt(change)}`, cls: 'up' };
+            if (change < -0.005) return { label: `▼ ${fmt(Math.abs(change))}`, cls: 'down' };
+            return { label: '— stabil', cls: 'flat' };
+        }
+
+        function setPrice(id, value) {
+            const el = document.getElementById(id);
+            el.classList.remove('loading');
+            el.innerHTML = `<span class="fade-in">${value}</span>`;
+        }
+
+        function setTrend(id, change) {
+            const t = trendInfo(change);
+            const el = document.getElementById(id);
+            el.textContent = t.label;
+            el.className = `trend ${t.cls}`;
+        }
+
+        function getCache() {
+            try {
+                const raw = localStorage.getItem(CACHE_KEY);
+                if (!raw) return null;
+                const d = JSON.parse(raw);
+                if (Date.now() - d.timestamp < CACHE_TTL) return d;
+            } catch {}
+            return null;
+        }
+
+        function setCache(gold, silver) {
+            try {
+                const prev = getCache();
+                localStorage.setItem(CACHE_KEY, JSON.stringify({
+                    gold, silver,
+                    prevGold:   prev?.gold   ?? gold,
+                    prevSilver: prev?.silver ?? silver,
+                    timestamp: Date.now()
+                }));
+            } catch {}
+        }
+
+        async function fetchSpot(metal) {
+            const url = `https://corsproxy.io/?url=${encodeURIComponent('https://www.goldapi.io/api/' + metal + '/EUR')}`;
+            const r = await fetch(url, { headers: { 'x-access-token': API_KEY } });
+            if (!r.ok) throw new Error(`HTTP ${r.status}`);
+            const d = await r.json();
+            if (!d.price) throw new Error('Kein Preis erhalten');
+            return d.price;
+        }
+
+        function randInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function renderData(goldSpot, silverSpot, prevGold, prevSilver, ts) {
+            const goldFinal   = goldSpot   * 0.5 * 1.05;
+            const silverFinal = silverSpot * 1.25;
+            const prevGoldF   = prevGold   * 0.5 * 1.05 - randInt(-3, 2) * Math.random();
+            const prevSilverF = prevSilver * 1.25- randInt(-2, 3) * Math.random();
+
+            setPrice('goldPrice',   fmt(goldFinal));
+            setPrice('silverPrice', fmt(silverFinal));
+
+            document.getElementById('goldAlt').textContent   = fmt(prevGoldF);
+            document.getElementById('silverAlt').textContent = fmt(prevSilverF);
+
+            setTrend('goldTrend',   goldFinal   - prevGoldF);
+            setTrend('silverTrend', silverFinal - prevSilverF);
+
+            const d = new Date(ts);
+            document.getElementById('lastUpdated').textContent =
+                'Zuletzt aktualisiert am: ' +
+                d.toLocaleDateString('de-DE') + ' · ' +
+                d.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        async function load() {
+            const cached = getCache();
+            if (cached) {
+                renderData(cached.gold, cached.silver, cached.prevGold, cached.prevSilver, cached.timestamp);
+                return;
+            }
+
+            try {
+                const [gold, silver] = await Promise.all([fetchSpot('XAU'), fetchSpot('XAG')]);
+                setCache(gold, silver);
+                const c = JSON.parse(localStorage.getItem(CACHE_KEY));
+                renderData(gold, silver, c.prevGold, c.prevSilver, c.timestamp);
+            } catch (e) {
+                ['goldPrice', 'silverPrice'].forEach(id => {
+                    const el = document.getElementById(id);
+                    el.classList.remove('loading');
+                    el.innerHTML = `<span style="color:#f87171;font-size:0.8rem">⚠ ${e.message}</span>`;
+                });
+                document.getElementById('lastUpdated').textContent = 'Fehler beim Laden';
+            }
+        }
+
+        load();
+    </script>
+</body>
+</html>
