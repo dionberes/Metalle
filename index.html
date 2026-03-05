@@ -129,9 +129,9 @@
         }
 
         function renderData(goldSpot, silverSpot, prevGold, prevSilver, ts) {
-            const goldFinal   = goldSpot   * 0.5 * 1.05;
+            const goldFinal   = goldSpot   * 0.5 * 1.0;
             const silverFinal = silverSpot * 1.25;
-            const prevGoldF   = prevGold   * 0.5 * 1.05 - randInt(-3, 2) * Math.random();
+            const prevGoldF   = prevGold   * 0.5 * 1.0 - randInt(-3, 2) * Math.random();
             const prevSilverF = prevSilver * 1.25- randInt(-2, 3) * Math.random();
 
             setPrice('goldPrice',   fmt(goldFinal));
@@ -175,4 +175,5 @@
         load();
     </script>
 </body>
+
 </html>
