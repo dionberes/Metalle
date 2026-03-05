@@ -32,10 +32,16 @@
                         <label>Letzter Preis</label>
                         <span id="goldAlt">—</span>
                     </div>
-                    <div class="stat-item">
-                        <label>Trend</label>
-                        <span class="trend flat" id="goldTrend">—</span>
-                    </div>
+                    <section class="paid-stats">
+                        <div class="stat-item" style="border-right: 1px solid rgba(255, 255, 255, 0.874); padding-right: 10px;">
+                            <label>Gezahlt</label>
+                            <span class="trend flat" id="GoldGezahlt">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <label>Gewinn</label>
+                            <span class="trend flat" id="goldTrend">—</span>
+                        </div>
+                    </section>
                 </div>
             </div>
 
@@ -71,6 +77,10 @@
         const API_KEY   = 'goldapi-dgj5smljlfodt-io';
         const CACHE_KEY = 'metalpreise_cache';
         const CACHE_TTL = 8 * 60 * 60 * 1000; // 8 stunden damit api nd abkackt
+
+        const BezahltGold = 1938;
+
+        document.getElementById('GoldGezahlt').innerText = BezahltGold+" €";
 
         const fmt = n => n.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
 
@@ -131,7 +141,7 @@
         function renderData(goldSpot, silverSpot, prevGold, prevSilver, ts) {
             const goldFinal   = goldSpot   * 0.5 * 1.026;
             const silverFinal = silverSpot * 1.25;
-            const prevGoldF   = prevGold   * 0.5 * 1.026 - randInt(-3, 2) * Math.random();
+            const prevGoldF   = goldFinal + BezahltGold - goldFinal;
             const prevSilverF = prevSilver * 1.25- randInt(-2, 3) * Math.random();
 
             setPrice('goldPrice',   fmt(goldFinal));
@@ -175,6 +185,4 @@
         load();
     </script>
 </body>
-
 </html>
-
