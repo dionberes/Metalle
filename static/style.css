@@ -14,9 +14,6 @@
     margin: 0;
     padding: 0;
 }
-body, html {
-    height: 100%;
-}
 
 body {
     font-family: 'Inter', sans-serif;
@@ -78,10 +75,10 @@ header p {
     margin-bottom: 20px;
 }
 .symbol {
-    background: #ffffff;
+    background: #ffffff87;
     color: var(--accent);
     padding: 8px 12px;
-    border-radius: 100px;
+    border-radius: 10px;
     font-weight: 600;
     margin-right: 15px;
 }
@@ -195,5 +192,11 @@ header p {
 @media (max-width: 700px) {
     .footer {
         display: none;
+    }
+}
+
+@media (max-width: 700px) {
+    html {
+        font-size: 12px;
     }
 }
