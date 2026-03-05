@@ -2,8 +2,8 @@
     --bg-color: #000000;
     --card-bg: #d2d2d2;
     --text-main: #ffffff;
-    --text-muted: #e1f5fe;
-    --accent: #0984e3;
+    --text-muted: #ffffffb5;
+    --accent: #517794;
     --white: #ffffff;
     --up-color: #00b894;
     --down-color: #d63031;
@@ -52,14 +52,11 @@ header p {
     color: var(--text-muted);
     margin-top: 5px;
 }
-
-
 .price-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 20px;
 }
-
 .card {
     margin-top: 10px;
     background: rgba(255, 255, 255, 0.224); 
@@ -68,24 +65,23 @@ header p {
     border-radius: 10px;
     padding: 30px;
 }
-
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 5px  10px 5px rgba(0, 0, 0, 0.379);
-    transition: all 0.3s ease-in-out;
+.paid-stats {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px ;
+    justify-content: space-between;
 }
-
-
 .card-header {
     display: flex;
     align-items: center;
     margin-bottom: 20px;
 }
 .symbol {
-    background: #e1f5fe;
+    background: #ffffff;
     color: var(--accent);
     padding: 8px 12px;
-    border-radius: 10px;
+    border-radius: 100px;
     font-weight: 600;
     margin-right: 15px;
 }
@@ -100,7 +96,7 @@ header p {
 .stats {
     display: flex;
     justify-content: space-between;
-    border-top: 1px solid #eee;
+    border-top: 1px solid #ffffff6a;
     padding-top: 20px;
 }
 
@@ -120,7 +116,7 @@ header p {
     padding: 20px;
     color: var(--text-muted);
     bottom: 0;
-
+    
     position: fixed;
     height: 10px;
     width: 100%;
