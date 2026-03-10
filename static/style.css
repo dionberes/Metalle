@@ -17,7 +17,7 @@
 
 body {
     font-family: 'Inter', sans-serif;
-    background: #2c3e50;
+    background: #000000;
     color: var(--text-main);
     display: flex;
     flex-direction: row;
@@ -56,11 +56,12 @@ header p {
 }
 .card {
     margin-top: 10px;
-    background: rgba(255, 255, 255, 0.224); 
+    background: rgb(7, 7, 7); 
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
     border-radius: 10px;
     padding: 30px;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.092);
 }
 .paid-stats {
     display: flex;
@@ -74,14 +75,38 @@ header p {
     align-items: center;
     margin-bottom: 20px;
 }
-.symbol {
-    background: #ffffff87;
-    color: var(--accent);
+.symbol1 {
+    background: linear-gradient(
+    45deg, 
+    #bf953f, 
+    #fcf6ba, 
+    #b38728, 
+    #fff8a9, 
+    #aa771c
+    );
+    color: rgb(7, 7, 7);
     padding: 8px 12px;
     border-radius: 10px;
     font-weight: 600;
     margin-right: 15px;
 }
+
+.symbol {
+    background: linear-gradient(
+        90deg, 
+        #70706F 0%, 
+        #EFEFEF 25%, 
+        #B6B6B4 50%, 
+        #EFEFEF 75%, 
+        #70706F 100%
+    );
+    color: rgb(7, 7, 7);
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-weight: 600;
+    margin-right: 15px;
+}
+
 
 .price-main {
     font-size: 2.2rem;
@@ -176,8 +201,6 @@ header p {
   z-index: 1;
 }
 
-
-
 .outline:hover::before {
   padding: 0.5rem;
   filter: grayscale(0);
@@ -200,3 +223,4 @@ header p {
         font-size: 12px;
     }
 }
+
